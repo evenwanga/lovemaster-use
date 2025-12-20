@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { MapPin, Search, Mic, Menu, ChevronLeft, ChevronRight, Share2, MoreHorizontal, Star, Heart, MessageSquare, User, Home, ShieldCheck, CheckCircle2, Phone, Crown, Gem, Users, Coffee, Sparkles, Filter, ChevronDown, ArrowRight, Clock, Image as ImageIcon, FileText, Send, Smile, PlusCircle, X, ShoppingBag, CreditCard, XCircle, ScrollText, Wallet, Flame, History, Trash2, ArrowLeft, Building2, LayoutGrid, Gift, Zap, Bell, Volume2, VolumeX, Settings, Headphones, Ticket } from 'lucide-react';
+import { MapPin, Search, Mic, Menu, ChevronLeft, ChevronRight, Share2, MoreHorizontal, Star, Heart, MessageSquare, User, Home, ShieldCheck, CheckCircle2, Phone, Crown, Gem, Users, Coffee, Sparkles, Filter, ChevronDown, ArrowRight, Clock, Image as ImageIcon, FileText, Send, Smile, PlusCircle, X, ShoppingBag, CreditCard, XCircle, ScrollText, Wallet, Flame, History as HistoryIcon, Trash2, ArrowLeft, Building2, LayoutGrid, Gift, Zap, Bell, Volume2, VolumeX, Settings, Headphones, Ticket } from 'lucide-react';
 import { MOCK_MATCHMAKERS, CATEGORIES, SERVICE_PACKAGES, MOCK_REVIEWS, REVIEW_TAGS, MOCK_ORDERS, MOCK_CHAT_THREADS, MOCK_CHAT_HISTORY } from './constants';
 import { Matchmaker, Candidate, ServicePackage, Order, Message, ChatThread } from './types';
 import MatchmakerCard from './components/MatchmakerCard';
@@ -8,6 +8,9 @@ import CandidateDetail from './components/CandidateDetail';
 import OrderDetail from './components/OrderDetail';
 import SearchResultItem from './components/SearchResultItem';
 import MerchantEntry from './components/MerchantEntry';
+import BlackCard from './components/BlackCard';
+import FavoriteMatchmakers from './components/FavoriteMatchmakers';
+import History from './components/History';
 
 enum View {
   HOME,
@@ -15,15 +18,18 @@ enum View {
   CANDIDATE_DETAIL,
   CHAT,
   ORDER_DETAIL,
-  MERCHANT_ENTRY
+  MERCHANT_ENTRY,
+  BLACK_CARD,
+  FAVORITE_MATCHMAKERS,
+  HISTORY
 }
 
 // 1. Top Actions (Basic Capabilities) - Reverted to sit inside/below yellow header
 const TOP_ACTIONS = [
-  { name: '珍爱黑卡', icon: CreditCard },
+  { name: '幸福黑卡', icon: CreditCard, id: 'black_card' },
   { name: '商户入驻', icon: Building2, id: 'merchant_entry' },
-  { name: '收藏红娘', icon: Heart },
-  { name: '最近浏览', icon: History },
+  { name: '收藏红娘', icon: Heart, id: 'favorite' },
+  { name: '最近浏览', icon: HistoryIcon, id: 'history' },
 ];
 
 // 2. Circular Nav (Professions) - King Kong Area
@@ -216,7 +222,12 @@ const App: React.FC = () => {
        setSelectedMatchmaker(null);
     } else if (currentView === View.MERCHANT_ENTRY) {
         setCurrentView(View.HOME);
-        // If we were in Mine tab, keep activeHomeTab as is, but View is HOME wrapper
+    } else if (currentView === View.BLACK_CARD) {
+        setCurrentView(View.HOME);
+    } else if (currentView === View.FAVORITE_MATCHMAKERS) {
+        setCurrentView(View.HOME);
+    } else if (currentView === View.HISTORY) {
+        setCurrentView(View.HOME);
     }
   };
 
@@ -738,30 +749,32 @@ const App: React.FC = () => {
             )}
         </div>
         
-        {/* Floating Cart (Capsule Style) */}
+        {/* Floating Cart (Meituan Capsule Style) - Optimized for Adaptation */}
         {activeDetailTab === 'resources' && selectedCandidates.size > 0 && (
-             <div className="fixed bottom-6 left-4 right-4 z-50 animate-in slide-in-from-bottom-4 duration-300">
-                 <div className="bg-[#222426] rounded-full shadow-xl p-2 pl-4 flex items-center justify-between border border-gray-700/50">
-                     <div className="flex items-center gap-3">
-                         <div className="relative">
-                             <div className="w-10 h-10 bg-[#333537] rounded-full flex items-center justify-center border border-gray-600">
-                                 <Heart size={20} fill="currentColor" className="text-white" />
-                             </div>
-                             <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] min-w-[1.25rem] h-5 px-1 rounded-full flex items-center justify-center border-2 border-[#222426] shadow-sm font-bold scale-110">
-                                 {selectedCandidates.size}
-                             </div>
-                         </div>
-                         <div className="flex flex-col">
-                             <div className="text-sm font-bold text-white">已选 {selectedCandidates.size} 位嘉宾</div>
-                             <div className="text-[10px] text-gray-400">可发送给红娘咨询详情</div>
-                         </div>
-                     </div>
-                     <button 
-                         onClick={() => handleOpenChat(selectedMatchmaker, true)}
-                         className="px-6 py-2 bg-mt-yellow text-gray-900 font-bold rounded-full shadow-lg active:scale-95 transition-transform"
-                     >
-                         去咨询
-                     </button>
+             <div className="fixed bottom-0 left-0 right-0 z-[60] px-4 pb-4 pb-safe-bottom pointer-events-none animate-in slide-in-from-bottom-full duration-500 ease-out">
+                 <div className="max-w-md mx-auto pointer-events-auto">
+                    <div className="bg-[#222426]/95 backdrop-blur-md rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.4)] p-2 pl-4 flex items-center justify-between border border-white/10">
+                        <div className="flex items-center gap-3">
+                            <div className="relative">
+                                <div className="w-12 h-12 bg-gradient-to-br from-[#333537] to-[#1a1c1e] rounded-full flex items-center justify-center border border-white/10 shadow-inner">
+                                    <Heart size={22} fill="currentColor" className="text-mt-yellow animate-pulse" />
+                                </div>
+                                <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[11px] min-w-[1.4rem] h-5.5 px-1.5 rounded-full flex items-center justify-center border-2 border-[#222426] shadow-sm font-bold">
+                                    {selectedCandidates.size}
+                                </div>
+                            </div>
+                            <div className="flex flex-col">
+                                <div className="text-sm font-bold text-white">已选 {selectedCandidates.size} 位嘉宾</div>
+                                <div className="text-[10px] text-white/50">向红娘发起多位咨询成功率更高</div>
+                            </div>
+                        </div>
+                        <button 
+                            onClick={() => handleOpenChat(selectedMatchmaker, true)}
+                            className="px-8 py-3 bg-mt-yellow hover:bg-yellow-400 text-gray-900 font-extrabold text-sm rounded-full shadow-lg active:scale-95 transition-all"
+                        >
+                            去咨询
+                        </button>
+                    </div>
                  </div>
              </div>
         )}
@@ -1274,6 +1287,12 @@ const App: React.FC = () => {
                                         onClick={() => {
                                             if (action.id === 'merchant_entry') {
                                                 setCurrentView(View.MERCHANT_ENTRY);
+                                            } else if (action.id === 'black_card') {
+                                                setCurrentView(View.BLACK_CARD);
+                                            } else if (action.id === 'favorite') {
+                                                setCurrentView(View.FAVORITE_MATCHMAKERS);
+                                            } else if (action.id === 'history') {
+                                                setCurrentView(View.HISTORY);
                                             }
                                         }}
                                     >
@@ -1323,7 +1342,7 @@ const App: React.FC = () => {
                                 </div>
                                 {/* Coupons */}
                                 <div className="grid grid-cols-4 gap-2">
-                                    {[40, 30, 20, 10].map((val, i) => (
+                                    {[1999, 999, 520, 199].map((val, i) => (
                                         <div key={i} className="bg-red-50 border border-red-100 rounded-lg py-2 flex flex-col items-center justify-center relative">
                                             <div className="text-red-500 font-extrabold text-sm"><span className="text-[10px]">¥</span>{val}</div>
                                             <div className="text-[9px] text-red-400">现金券</div>
@@ -1401,27 +1420,27 @@ const App: React.FC = () => {
                         </div>
 
                         {/* Marketing Banner (User Education) - Pushed Down */}
-                        <div className="bg-white px-3 pb-3 pt-3">
-                            <div className="bg-gradient-to-r from-orange-50 to-pink-50 rounded-lg p-2.5 flex items-center justify-between border border-orange-100/50 shadow-sm relative overflow-hidden">
+                        <div className="px-3 mt-3">
+                            <div className="bg-gradient-to-r from-orange-50 to-pink-50 rounded-xl p-3 flex items-center justify-between border border-orange-100 shadow-sm relative overflow-hidden">
                                 {/* Decorative background circle */}
-                                <div className="absolute right-0 top-0 w-20 h-20 bg-white/30 rounded-full -mr-6 -mt-6 pointer-events-none"></div>
+                                <div className="absolute right-0 top-0 w-20 h-20 bg-white/40 rounded-full -mr-6 -mt-6 pointer-events-none"></div>
                                 
                                 <div className="flex-1 relative z-10">
-                                    <div className="flex items-baseline gap-2 mb-1">
-                                        <span className="text-sm font-extrabold text-orange-800">三步找到对的人</span>
-                                        <span className="text-[10px] text-orange-600/80">官方认证 • 平台担保</span>
+                                    <div className="flex items-center gap-2 mb-1.5">
+                                        <span className="text-sm font-bold text-gray-900">三步找到对的人</span>
+                                        <span className="text-[10px] text-orange-600 bg-white/60 px-1.5 py-0.5 rounded-sm">官方认证 · 平台担保</span>
                                     </div>
-                                    <div className="flex items-center text-[10px] text-gray-600 font-medium">
-                                        <span className="bg-white/60 px-1.5 py-0.5 rounded text-orange-700">1.选红娘</span>
-                                        <span className="mx-1 text-orange-300">→</span>
+                                    <div className="flex items-center text-[11px] text-gray-600 font-medium">
+                                        <span className="font-bold text-orange-700">1.选红娘</span>
+                                        <ArrowRight size={10} className="mx-1 text-orange-300" />
                                         <span>2.聊需求</span>
-                                        <span className="mx-1 text-gray-300">→</span>
+                                        <ArrowRight size={10} className="mx-1 text-gray-300" />
                                         <span>3.去约会</span>
                                     </div>
                                 </div>
                                 
-                                <div className="flex-shrink-0 bg-white/80 p-1.5 rounded-full shadow-sm ml-2 z-10">
-                                    <ArrowRight size={14} className="text-orange-500" />
+                                <div className="flex-shrink-0 bg-white/80 w-8 h-8 flex items-center justify-center rounded-full shadow-sm ml-2 z-10">
+                                    <ArrowRight size={16} className="text-orange-500" />
                                 </div>
                             </div>
                         </div>
@@ -1612,6 +1631,23 @@ const App: React.FC = () => {
         )}
         {currentView === View.MERCHANT_ENTRY && (
             <MerchantEntry onBack={handleBack} />
+        )}
+        {currentView === View.BLACK_CARD && (
+            <BlackCard onBack={handleBack} />
+        )}
+        {currentView === View.FAVORITE_MATCHMAKERS && (
+            <FavoriteMatchmakers 
+                onBack={handleBack} 
+                onNavigateToMatchmaker={handleMatchmakerClick}
+                onConsult={(m) => handleOpenChat(m)}
+            />
+        )}
+        {currentView === View.HISTORY && (
+            <History 
+                onBack={handleBack}
+                onNavigateToCandidate={handleCandidateClick}
+                onConsult={(m, c) => handleOpenChat(m, false, c)}
+            />
         )}
         {renderPaymentModal()}
     </div>

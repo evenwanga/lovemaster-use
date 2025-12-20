@@ -6,9 +6,10 @@ interface Props {
   data: Matchmaker;
   onClick: () => void;
   onConsult: () => void;
+  extraAction?: React.ReactNode;
 }
 
-const MatchmakerCard: React.FC<Props> = ({ data, onClick, onConsult }) => {
+const MatchmakerCard: React.FC<Props> = ({ data, onClick, onConsult, extraAction }) => {
   // Badge Logic: Prioritize Enterprise/Diamond
   const isEnterprise = data.badges.some(b => b.includes('企业') || b.includes('钻石'));
   const primaryBadge = data.badges.find(b => b.includes('企业') || b.includes('钻石')) || data.badges[0];
@@ -44,12 +45,12 @@ const MatchmakerCard: React.FC<Props> = ({ data, onClick, onConsult }) => {
         {/* Info Section */}
         <div className="flex-1 min-w-0 flex flex-col justify-between">
             <div className="flex justify-between items-start">
-              <div className="flex flex-col gap-0.5 w-full mr-2">
+              <div className="flex flex-col gap-0.5 flex-1 mr-2 min-w-0">
                   {/* Row 1: Name & Primary Badge */}
                   <div className="flex items-center flex-wrap gap-1.5">
-                    <h3 className="text-lg font-bold text-gray-900 leading-tight">{data.name}</h3>
+                    <h3 className="text-lg font-bold text-gray-900 leading-tight truncate max-w-full">{data.name}</h3>
                     {primaryBadge && (
-                       <div className={`text-[9px] px-1 py-0.5 rounded flex items-center gap-0.5 font-bold shadow-sm whitespace-nowrap ${
+                       <div className={`text-[9px] px-1 py-0.5 rounded flex items-center gap-0.5 font-bold shadow-sm whitespace-nowrap flex-shrink-0 ${
                            isEnterprise 
                              ? 'bg-gray-900 text-mt-yellow' // High contrast for Enterprise
                              : 'bg-gradient-to-r from-orange-50 to-amber-100 text-orange-700 border border-orange-200'
@@ -61,17 +62,17 @@ const MatchmakerCard: React.FC<Props> = ({ data, onClick, onConsult }) => {
                   </div>
                   
                   {/* Row 2: Stats */}
-                  <div className="text-xs text-gray-500 flex items-center gap-2 mt-1">
-                    <div className="flex items-center text-orange-500 font-bold">
+                  <div className="text-xs text-gray-500 flex items-center gap-2 mt-1 truncate">
+                    <div className="flex items-center text-orange-500 font-bold flex-shrink-0">
                         <Star size={10} fill="currentColor" className="mr-0.5"/>
                         <span className="text-sm">{data.rating}</span>
                     </div>
-                    <span className="w-px h-2 bg-gray-300"></span>
-                    <span>月单 {data.monthlyOrders}</span>
-                    <span className="w-px h-2 bg-gray-300"></span>
-                    <span>{data.distance}</span>
-                    <span className="w-px h-2 bg-gray-300"></span>
-                    <span>{data.deliveryTime}响应</span>
+                    <span className="w-px h-2 bg-gray-300 flex-shrink-0"></span>
+                    <span className="flex-shrink-0">月单 {data.monthlyOrders}</span>
+                    <span className="w-px h-2 bg-gray-300 flex-shrink-0"></span>
+                    <span className="truncate">{data.distance}</span>
+                    <span className="w-px h-2 bg-gray-300 flex-shrink-0"></span>
+                    <span className="flex-shrink-0">{data.deliveryTime}响应</span>
                   </div>
 
                   {/* Row 3: Reputation (Deposit & Secondary Badges) */}
@@ -104,16 +105,19 @@ const MatchmakerCard: React.FC<Props> = ({ data, onClick, onConsult }) => {
                   )}
               </div>
               
-              {/* Call to Action: "Go to Consult" Button */}
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onConsult();
-                }}
-                className="flex-shrink-0 bg-mt-yellow text-slate-900 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm hover:shadow-md transition-shadow active:scale-95 whitespace-nowrap"
-              >
-                  去咨询
-              </button>
+              {/* Call to Action & Extra Actions */}
+              <div className="flex items-center gap-2 flex-shrink-0">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onConsult();
+                    }}
+                    className="bg-mt-yellow text-slate-900 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm hover:shadow-md transition-shadow active:scale-95 whitespace-nowrap"
+                  >
+                      去咨询
+                  </button>
+                  {extraAction}
+              </div>
             </div>
         </div>
       </div>
